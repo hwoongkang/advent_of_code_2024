@@ -2,11 +2,11 @@ use super::Solution;
 
 pub struct Day02;
 
-fn is_safe(signal: &[i32]) -> bool {
+fn is_safe(signal: &[i64]) -> bool {
     let mut prev = 0;
     let mut is_increasing = true;
     for (i, &num) in signal.iter().enumerate() {
-        let diff = num - prev;
+        let diff = (num - prev).abs();
         let is_diff_safe = 1 <= diff && diff <= 3;
         match i {
             0 => {}
@@ -43,31 +43,15 @@ impl Solution for Day02 {
         _input
             .lines()
             .map(|line| {
-                let mut is_increasing = true;
-                let mut prev = 0;
-                for (i, str) in line.split_ascii_whitespace().enumerate() {
-                    let num: i32 = str.parse().unwrap();
-                    let diff = (num - prev).abs();
-
-                    match i {
-                        0 => {}
-                        1 => {
-                            is_increasing = num > prev;
-                            if diff == 0 || diff > 3 {
-                                return 0;
-                            }
-                        }
-                        _ => {
-                            if is_increasing != (num > prev) {
-                                return 0;
-                            } else if diff == 0 || diff > 3 {
-                                return 0;
-                            }
-                        }
-                    }
-                    prev = num;
+                let signal: Vec<i64> = line
+                    .split_ascii_whitespace()
+                    .map(|ch| ch.parse().unwrap())
+                    .collect();
+                if is_safe(&signal) {
+                    1
+                } else {
+                    0
                 }
-                1
             })
             .sum::<u32>()
             .to_string()
@@ -75,8 +59,26 @@ impl Solution for Day02 {
 
     fn solve_part_2(_input: String) -> String {
         let mut ans = 0;
-        for line in _input.lines() {}
-        String::from("0")
+        'line: for line in _input.lines() {
+            let signal: Vec<i64> = line
+                .split_ascii_whitespace()
+                .map(|ch| ch.parse().unwrap())
+                .collect();
+            if is_safe(&signal) {
+                ans += 1;
+                continue;
+            }
+            let len = signal.len();
+            for i in 0..len {
+                let mut s = signal.clone();
+                s.remove(i);
+                if is_safe(&s) {
+                    ans += 1;
+                    continue 'line;
+                }
+            }
+        }
+        ans.to_string()
     }
 }
 
@@ -95,6 +97,6 @@ mod day02_tests {
     fn test_part_2() {
         let input = Day02::test_input();
         let ans = Day02::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert_eq!(ans, "4");
     }
 }
