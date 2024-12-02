@@ -2,7 +2,7 @@ use super::Solution;
 
 pub struct Day02;
 
-fn is_safe(signal: &[i64]) -> bool {
+fn is_safe_inner(signal: &[i32]) -> bool {
     let mut prev = 0;
     let mut is_increasing = true;
     for (i, &num) in signal.iter().enumerate() {
@@ -27,6 +27,24 @@ fn is_safe(signal: &[i64]) -> bool {
     true
 }
 
+fn is_safe(signal: &Vec<i32>, tolerance: bool) -> bool {
+    if !tolerance {
+        is_safe_inner(signal)
+    } else if is_safe_inner(signal) {
+        true
+    } else {
+        let len = signal.len();
+        for i in 0..len {
+            let mut s = signal.clone();
+            s.remove(i);
+            if is_safe_inner(&s) {
+                return true;
+            }
+        }
+        false
+    }
+}
+
 impl Solution for Day02 {
     fn test_input() -> String {
         String::from(
@@ -42,43 +60,37 @@ impl Solution for Day02 {
     fn solve_part_1(_input: String) -> String {
         _input
             .lines()
-            .map(|line| {
-                let signal: Vec<i64> = line
+            .filter_map(|line| {
+                let signal: Vec<i32> = line
                     .split_ascii_whitespace()
                     .map(|ch| ch.parse().unwrap())
                     .collect();
-                if is_safe(&signal) {
-                    1
+                if is_safe(&signal, false) {
+                    Some(())
                 } else {
-                    0
+                    None
                 }
             })
-            .sum::<u32>()
+            .count()
             .to_string()
     }
 
     fn solve_part_2(_input: String) -> String {
-        let mut ans = 0;
-        'line: for line in _input.lines() {
-            let signal: Vec<i64> = line
-                .split_ascii_whitespace()
-                .map(|ch| ch.parse().unwrap())
-                .collect();
-            if is_safe(&signal) {
-                ans += 1;
-                continue;
-            }
-            let len = signal.len();
-            for i in 0..len {
-                let mut s = signal.clone();
-                s.remove(i);
-                if is_safe(&s) {
-                    ans += 1;
-                    continue 'line;
+        _input
+            .lines()
+            .filter_map(|line| {
+                let signal: Vec<i32> = line
+                    .split_ascii_whitespace()
+                    .map(|ch| ch.parse().unwrap())
+                    .collect();
+                if is_safe(&signal, true) {
+                    Some(())
+                } else {
+                    None
                 }
-            }
-        }
-        ans.to_string()
+            })
+            .count()
+            .to_string()
     }
 }
 
