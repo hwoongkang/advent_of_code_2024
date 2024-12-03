@@ -1,5 +1,7 @@
 # 1일
 
+https://adventofcode.com/2024/day/1
+
 여느 때처럼 1일은 쉽습니다.
 
 ## Part 1
