@@ -1,5 +1,7 @@
 # Day 02
 
+https://adventofcode.com/2024/day/2
+
 둘째 날부터 야매로 풀어버렸습니다..
 
 ## Part 1
