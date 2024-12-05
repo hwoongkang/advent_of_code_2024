@@ -33,6 +33,48 @@ fn is_valid_update(nums: &[usize], pages: &[Option<Page>]) -> bool {
     }
     true
 }
+
+fn sort_update(update: &mut Vec<usize>, pages: &[Option<Page>]) -> usize {
+    let mut exists = vec![false; NUM_PAGE];
+    for page in update.iter() {
+        exists[*page] = true;
+    }
+    let mut sorted = vec![];
+    let mut visited = vec![false; NUM_PAGE];
+    fn visit(
+        n: usize,
+        exists: &[bool],
+        visited: &mut Vec<bool>,
+        sorted: &mut Vec<usize>,
+        pages: &[Option<Page>],
+    ) {
+        if visited[n] {
+            return;
+        }
+        let Some(page) = &pages[n] else {
+            sorted.push(n);
+            return;
+        };
+        for &parent in page.parents.iter() {
+            let parent = parent as usize;
+            if !exists[parent] {
+                continue;
+            }
+            visit(parent, exists, visited, sorted, pages);
+        }
+        visited[n] = true;
+        sorted.push(n);
+    }
+    for i in 0..NUM_PAGE {
+        visit(i, &exists, &mut visited, &mut sorted, pages);
+    }
+    let mut sort_key = vec![100; NUM_PAGE];
+    for (i, &n) in sorted.iter().enumerate() {
+        sort_key[n] = i;
+    }
+    update.sort_by_key(|&n| sort_key[n]);
+    update[update.len() / 2]
+}
 impl Solution for Day05 {
     fn test_input() -> String {
         String::from(
@@ -156,42 +198,11 @@ impl Solution for Day05 {
         add n to head of L
                          */
 
-        let mut sorted: Vec<usize> = vec![];
-        let mut visited = vec![false; NUM_PAGE];
-        fn visit(
-            n: usize,
-            sorted: &mut Vec<usize>,
-            visited: &mut Vec<bool>,
-            pages: &[Option<Page>],
-        ) {
-            println!("visited {},", n);
-            if visited[n] {
-                return;
-            }
-            let Some(page) = &pages[n] else {
-                sorted.push(n);
-                return;
-            };
-            for &parent in page.parents.iter() {
-                visit(parent as usize, sorted, visited, pages);
-            }
-            visited[n] = true;
-            sorted.push(n);
-        }
-        for i in 0..NUM_PAGE {
-            visit(i, &mut sorted, &mut visited, &pages);
-        }
-        let mut inverted = vec![0; NUM_PAGE];
-        for i in 0..NUM_PAGE {
-            let n = sorted[i];
-            inverted[n] = i;
-        }
         let mut ans = 0;
         for line in lines {
             let mut nums: Vec<usize> = line.split(",").map(|w| w.parse().unwrap()).collect();
             if !is_valid_update(&nums, &pages) {
-                nums.sort_by_key(|n| inverted[*n]);
-                ans += nums[nums.len() / 2];
+                ans += sort_update(&mut nums, &pages);
             }
         }
         ans.to_string()
