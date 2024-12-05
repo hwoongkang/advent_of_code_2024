@@ -6,7 +6,7 @@ struct Page {
     // me: u8,
     parents: Vec<u8>,
 }
-
+const NUM_PAGE: usize = 100;
 impl Page {
     fn new() -> Self {
         Self { parents: vec![] }
@@ -17,6 +17,22 @@ impl Page {
     }
 }
 
+fn is_valid_update(nums: &[usize], pages: &[Option<Page>]) -> bool {
+    let mut visited = vec![false; NUM_PAGE];
+    for num in nums.iter().rev() {
+        visited[*num] = true;
+        let Some(page) = &pages[*num] else {
+            println!("irrelavalent");
+            continue;
+        };
+        for parent in page.parents.iter() {
+            if visited[*parent as usize] {
+                return false;
+            }
+        }
+    }
+    true
+}
 impl Solution for Day05 {
     fn test_input() -> String {
         String::from(
@@ -52,7 +68,7 @@ impl Solution for Day05 {
     }
 
     fn solve_part_1(_input: String) -> String {
-        let mut pages: Vec<Option<Page>> = (0..100).map(|_| None).collect();
+        let mut pages: Vec<Option<Page>> = (0..NUM_PAGE).map(|_| None).collect();
         let mut lines = _input.lines();
 
         for line in &mut lines {
@@ -81,28 +97,104 @@ impl Solution for Day05 {
 
         let mut ans = 0;
 
-        'outmost: for line in lines {
+        for line in lines {
             let nums: Vec<usize> = line.split(",").map(|w| w.parse().unwrap()).collect();
             let mid = nums[nums.len() / 2];
-            let mut visited = vec![false; 100];
-            for num in nums.iter().rev() {
-                visited[*num] = true;
-                let Some(page) = &pages[*num] else {
-                    continue;
-                };
-                for parent in page.parents.iter() {
-                    if visited[*parent as usize] {
-                        continue 'outmost;
-                    }
-                }
+            if is_valid_update(&nums, &pages) {
+                ans += mid
             }
-            ans += mid
         }
         ans.to_string()
     }
 
     fn solve_part_2(_input: String) -> String {
-        String::from("0")
+        let mut pages: Vec<Option<Page>> = (0..NUM_PAGE).map(|_| None).collect();
+        let mut lines = _input.lines();
+
+        for line in &mut lines {
+            if line == "" {
+                break;
+            }
+            let mut words = line.split("|");
+            let parent: u8 = words.next().unwrap().parse().unwrap();
+            let child: u8 = words.next().unwrap().parse().unwrap();
+
+            if pages[child as usize].is_none() {
+                pages[child as usize] = Some(Page::new());
+            }
+            if pages[parent as usize].is_none() {
+                let new_parent = Page::new();
+                pages[parent as usize] = Some(new_parent);
+            }
+
+            if let Some(page) = &mut pages[child as usize] {
+                page.add_parent(parent);
+            } else {
+                let mut new_page = Page::new();
+                new_page.add_parent(parent);
+            }
+        }
+
+        /***
+         * L ← Empty list that will contain the sorted nodes
+        while exists nodes without a permanent mark do
+        select an unmarked node n
+        visit(n)
+
+        function visit(node n)
+        if n has a permanent mark then
+        return
+        if n has a temporary mark then
+        stop   (graph has at least one cycle)
+
+        mark n with a temporary mark
+
+        for each node m with an edge from n to m do
+        visit(m)
+
+        mark n with a permanent mark
+        add n to head of L
+                         */
+
+        let mut sorted: Vec<usize> = vec![];
+        let mut visited = vec![false; NUM_PAGE];
+        fn visit(
+            n: usize,
+            sorted: &mut Vec<usize>,
+            visited: &mut Vec<bool>,
+            pages: &[Option<Page>],
+        ) {
+            println!("visited {},", n);
+            if visited[n] {
+                return;
+            }
+            let Some(page) = &pages[n] else {
+                sorted.push(n);
+                return;
+            };
+            for &parent in page.parents.iter() {
+                visit(parent as usize, sorted, visited, pages);
+            }
+            visited[n] = true;
+            sorted.push(n);
+        }
+        for i in 0..NUM_PAGE {
+            visit(i, &mut sorted, &mut visited, &pages);
+        }
+        let mut inverted = vec![0; NUM_PAGE];
+        for i in 0..NUM_PAGE {
+            let n = sorted[i];
+            inverted[n] = i;
+        }
+        let mut ans = 0;
+        for line in lines {
+            let mut nums: Vec<usize> = line.split(",").map(|w| w.parse().unwrap()).collect();
+            if !is_valid_update(&nums, &pages) {
+                nums.sort_by_key(|n| inverted[*n]);
+                ans += nums[nums.len() / 2];
+            }
+        }
+        ans.to_string()
     }
 }
 
@@ -121,6 +213,6 @@ mod day05_tests {
     fn test_part_2() {
         let input = Day05::test_input();
         let ans = Day05::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert_eq!(ans, "123");
     }
 }
