@@ -1,10 +1,13 @@
+use std::collections::HashSet;
+
 use super::Solution;
 
 pub struct Day06;
 
-#[derive(Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 struct Pos(i32, i32);
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 enum Dir {
     Up,
     Down,
@@ -13,6 +16,9 @@ enum Dir {
 }
 
 use Dir::*;
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+struct State(Pos, Dir);
 
 impl Dir {
     fn right(&self) -> Dir {
@@ -34,14 +40,17 @@ impl Dir {
     }
 }
 
+#[derive(PartialEq, Eq, Clone)]
 struct System {
-    guard: (Pos, Dir),
+    guard: State,
     map: Vec<Vec<bool>>,
-    clock: usize,
     trace: Vec<Vec<bool>>,
 }
 
 impl System {
+    fn size(&self) -> (usize, usize) {
+        (self.map.len(), self.map[0].len())
+    }
     fn from(input: String) -> Self {
         let mut pos: Pos = Pos(0, 0);
         let dir = Up;
@@ -64,10 +73,9 @@ impl System {
             })
             .collect();
         System {
-            guard: (pos, dir),
+            guard: State(pos, dir),
             trace: vec![vec![false; map[0].len()]; map.len()],
             map,
-            clock: 0,
         }
     }
     fn tick(&mut self) -> Option<usize> {
@@ -90,6 +98,21 @@ impl System {
         } else {
             self.guard.1 = self.guard.1.right();
             None
+        }
+    }
+
+    fn check_for_loop(&mut self) -> bool {
+        let mut seen: HashSet<State> = HashSet::new();
+        loop {
+            let existed = !seen.insert(self.guard);
+
+            if existed {
+                break true;
+            }
+
+            if let Some(_) = self.tick() {
+                break false;
+            }
         }
     }
 }
@@ -121,7 +144,27 @@ impl Solution for Day06 {
     }
 
     fn solve_part_2(_input: String) -> String {
-        String::from("0")
+        let sys = System::from(_input);
+        let (mr, mc) = sys.size();
+        let mut ans = 0;
+        for r in 0..mr {
+            for c in 0..mc {
+                let ir = r as i32;
+                let ic = c as i32;
+                if ir == sys.guard.0 .0 && ic == sys.guard.0 .1 {
+                    continue;
+                } else if !sys.map[r][c] {
+                    continue;
+                } else {
+                    let mut sys = sys.clone();
+                    sys.map[r][c] = false;
+                    if sys.check_for_loop() {
+                        ans += 1;
+                    }
+                }
+            }
+        }
+        ans.to_string()
     }
 }
 
@@ -140,6 +183,6 @@ mod day06_tests {
     fn test_part_2() {
         let input = Day06::test_input();
         let ans = Day06::solve_part_2(input);
-        assert_eq!(ans, "41");
+        assert_eq!(ans, "6");
     }
 }
