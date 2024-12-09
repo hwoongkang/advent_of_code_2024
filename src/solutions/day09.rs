@@ -141,9 +141,57 @@ impl Solution for Day09 {
     }
 }
 
+impl Day09 {
+    pub fn solve_part_1_naive(input: String) -> String {
+        let mut files: VecDeque<Option<u64>> = VecDeque::new();
+        let mut is_file = true;
+        let mut file_id = 0;
+        for ch in input.chars() {
+            let len = ch.to_digit(10).unwrap();
+            if is_file {
+                for _ in 0..len {
+                    files.push_back(Some(file_id));
+                }
+                is_file = false;
+                file_id += 1;
+            } else {
+                for _ in 0..len {
+                    files.push_back(None);
+                }
+                is_file = true;
+            }
+        }
+
+        let mut check_sum = 0;
+        let mut ind = 0;
+        while let Some(maybe_file) = files.pop_front() {
+            if let Some(file_id) = maybe_file {
+                check_sum += file_id * ind;
+            } else {
+                while let Some(maybe_file) = files.pop_back() {
+                    if let Some(file_id) = maybe_file {
+                        check_sum += file_id * ind;
+                        break;
+                    }
+                }
+            }
+            ind += 1;
+        }
+
+        check_sum.to_string()
+    }
+}
+
 #[cfg(test)]
 mod day09_tests {
     use super::*;
+
+    #[test]
+    fn test_part_1_naive() {
+        let input = Day09::test_input();
+        let ans = Day09::solve_part_1_naive(input);
+        assert_eq!(ans, "1928");
+    }
 
     #[test]
     fn test_part_1() {
