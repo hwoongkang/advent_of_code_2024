@@ -1,5 +1,7 @@
 # Day 08
 
+https://adventofcode.com/2024/day/8
+
 전 그냥 구현으로 풀었습니다.
 
 ## Part 1
