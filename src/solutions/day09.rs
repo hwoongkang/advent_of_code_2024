@@ -3,8 +3,8 @@ use std::collections::VecDeque;
 use super::Solution;
 
 enum Space {
-    File(usize, usize),
-    Free(usize),
+    File(u32, usize),
+    Free(u32),
 }
 
 pub struct Day09;
@@ -16,36 +16,59 @@ impl Solution for Day09 {
 
     fn solve_part_1(_input: String) -> String {
         let mut file_id = 0;
-        let mut files: VecDeque<Option<usize>> = VecDeque::new();
+        let mut files: VecDeque<Space> = VecDeque::new();
         let mut is_file = true;
-        for char in _input.chars() {
-            let num = char.to_digit(10).unwrap();
-            let file = if !is_file { None } else { Some(file_id) };
-            for _ in 0..num {
-                files.push_back(file);
+        for ch in _input.chars() {
+            let len = ch.to_digit(10).unwrap();
+            if is_file {
+                files.push_back(Space::File(len, file_id));
+                file_id += 1;
+            } else {
+                files.push_back(Space::Free(len));
             }
             is_file = !is_file;
-            if is_file {
-                file_id += 1;
-            }
         }
         let mut check_sum = 0;
         let mut ind = 0;
+
         while let Some(maybe_file) = files.pop_front() {
-            if let Some(file_id) = maybe_file {
-                check_sum += ind * file_id;
-            } else {
-                loop {
-                    if let Some(maybe_file) = files.pop_back() {
-                        if let Some(file_id) = maybe_file {
-                            check_sum += ind * file_id;
-                            break;
+            match maybe_file {
+                Space::File(len, file_id) => {
+                    for _ in 0..len {
+                        check_sum += ind * file_id;
+                        ind += 1;
+                    }
+                }
+                Space::Free(mut free_len) => {
+                    while let Some(maybe_file) = files.pop_back() {
+                        match maybe_file {
+                            Space::Free(_) => {
+                                continue;
+                            }
+                            Space::File(file_len, file_id) => {
+                                if file_len > free_len {
+                                    let diff = file_len - free_len;
+                                    for _ in 0..free_len {
+                                        check_sum += ind * file_id;
+                                        ind += 1;
+                                    }
+                                    files.push_back(Space::File(diff, file_id));
+                                    break;
+                                } else {
+                                    let diff = free_len - file_len;
+                                    for _ in 0..file_len {
+                                        check_sum += ind * file_id;
+                                        ind += 1;
+                                    }
+                                    free_len = diff;
+                                }
+                            }
                         }
                     }
                 }
             }
-            ind += 1;
         }
+
         check_sum.to_string()
     }
 
