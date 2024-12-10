@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use super::Solution;
 
 struct Map {
@@ -69,6 +71,46 @@ impl Map {
 
         ans
     }
+
+    fn score_bfs(&self, pos: (usize, usize)) -> usize {
+        let (r, c) = pos;
+        if self.heights[r][c] != 0 {
+            return 0;
+        }
+
+        let (mr, mc) = self.size();
+
+        let mut counts: Vec<Vec<Option<usize>>> = vec![vec![None; mc]; mr];
+        counts[r][c] = Some(1);
+
+        let mut queue = VecDeque::from([(r, c)]);
+        let mut ans = 0;
+        let mut visited = vec![vec![false; mc]; mr];
+
+        while let Some((r, c)) = queue.pop_front() {
+            if visited[r][c] {
+                continue;
+            }
+            visited[r][c] = true;
+            let height = self.heights[r][c];
+            let count = counts[r][c].unwrap();
+            if height == 9 {
+                ans += counts[r][c].unwrap();
+            } else {
+                for (nr, nc) in self.adj((r, c)) {
+                    let nh = self.heights[nr][nc];
+                    if nh != height + 1 {
+                        continue;
+                    }
+                    let prev_count = counts[nr][nc].get_or_insert(0);
+                    *prev_count += count;
+                    queue.push_back((nr, nc));
+                }
+            }
+        }
+
+        ans
+    }
 }
 
 pub struct Day10;
@@ -100,7 +142,15 @@ impl Solution for Day10 {
     }
 
     fn solve_part_2(_input: String) -> String {
-        String::from("0")
+        let map = Map::from(_input);
+        let (mr, mc) = map.size();
+        let mut ans = 0;
+        for r in 0..mr {
+            for c in 0..mc {
+                ans += map.score_bfs((r, c));
+            }
+        }
+        ans.to_string()
     }
 }
 
@@ -119,6 +169,6 @@ mod day10_tests {
     fn test_part_2() {
         let input = Day10::test_input();
         let ans = Day10::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert_eq!(ans, "81");
     }
 }
