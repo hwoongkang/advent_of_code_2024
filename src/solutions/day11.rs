@@ -34,6 +34,14 @@ impl PlutoStone {
     }
 }
 
+fn blink(stones: Vec<PlutoStone>) -> Vec<PlutoStone> {
+    let mut ans = vec![];
+    for stone in stones.iter() {
+        ans.append(&mut stone.blink());
+    }
+    ans
+}
+
 fn blink_map(stones: HashMap<usize, usize>) -> HashMap<usize, usize> {
     let mut ans = HashMap::new();
     for (num, qty) in stones.into_iter() {
@@ -55,16 +63,16 @@ impl Solution for Day11 {
     }
 
     fn solve_part_1(_input: String) -> String {
-        let mut stones = HashMap::new();
-        for n in _input.split_ascii_whitespace().map(|w| w.parse().unwrap()) {
-            let entry = stones.entry(n).or_insert(0);
-            *entry += 1;
-        }
+        let mut stones = _input
+            .split_ascii_whitespace()
+            .map(|w| w.parse().unwrap())
+            .map(|n| PlutoStone(n))
+            .collect();
 
         for _ in 0..25 {
-            stones = blink_map(stones);
+            stones = blink(stones);
         }
-        stones.into_values().sum::<usize>().to_string()
+        stones.len().to_string()
     }
 
     fn solve_part_2(_input: String) -> String {
@@ -84,6 +92,27 @@ impl Solution for Day11 {
 #[cfg(test)]
 mod day11_tests {
     use super::*;
+
+    #[test]
+    fn test_blink() {
+        let prev = vec![
+            PlutoStone(0),
+            PlutoStone(1),
+            PlutoStone(10),
+            PlutoStone(99),
+            PlutoStone(999),
+        ];
+        let next = vec![
+            PlutoStone(1),
+            PlutoStone(2024),
+            PlutoStone(1),
+            PlutoStone(0),
+            PlutoStone(9),
+            PlutoStone(9),
+            PlutoStone(2021976),
+        ];
+        assert_eq!(blink(prev), next);
+    }
 
     #[test]
     fn test_blink_map() {
