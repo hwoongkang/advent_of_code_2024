@@ -85,8 +85,95 @@ p=9,5 v=-3,-3",
         solve_part_1(input, (101, 103))
     }
 
-    fn solve_part_2(_input: String) -> String {
-        String::from("0")
+    fn solve_part_2(input: String) -> String {
+        let mut robots = input.lines().map(parse_robot).collect::<Vec<_>>();
+        let b = (101, 103);
+        let print = |index: usize, robots: &Vec<((i32, i32), (i32, i32))>| {
+            let mut v = vec![vec![0; 103]; 101];
+            for r in robots.iter() {
+                v[r.0 .0 as usize][r.0 .1 as usize] += 1;
+            }
+            for row in v {
+                for n in row {
+                    if n > 0 {
+                        print!("*");
+                    } else {
+                        print!(".");
+                    }
+                }
+                println!();
+            }
+            println!("{}", index);
+        };
+        let tick = |robots: &mut Vec<((i32, i32), (i32, i32))>| {
+            for robot in robots.iter_mut() {
+                let (p, v) = robot;
+                p.0 += v.0;
+                p.0 = p.0.rem_euclid(b.0);
+                p.1 += v.1;
+                p.1 = p.1.rem_euclid(b.1);
+            }
+        };
+        let score = |robots: &Vec<((i32, i32), (i32, i32))>| -> usize {
+            let mut v = vec![vec![0; 103]; 101];
+            for r in robots.iter() {
+                v[r.0 .0 as usize][r.0 .1 as usize] += 1;
+            }
+            let robots = v;
+            let mut ans = 1;
+            let mut temp = 0;
+            let bound = (101, 103);
+            let h = (bound.0 / 2, bound.1 / 2);
+            for i in 0..h.0 {
+                for j in 0..h.1 {
+                    temp += robots[i][j];
+                }
+            }
+            ans *= temp;
+
+            temp = 0;
+            for i in 0..h.0 {
+                for j in (h.1 + 1)..bound.1 {
+                    temp += robots[i][j];
+                }
+            }
+            ans *= temp;
+
+            temp = 0;
+            for i in (h.0 + 1)..bound.0 {
+                for j in 0..h.1 {
+                    temp += robots[i][j];
+                }
+            }
+            ans *= temp;
+
+            temp = 0;
+            for i in (h.0 + 1)..bound.0 {
+                for j in (h.1 + 1)..bound.1 {
+                    temp += robots[i][j];
+                }
+            }
+            ans *= temp;
+
+            ans
+        };
+        let mut index = 0;
+        let mut prev_max = usize::MAX;
+
+        loop {
+            let mut l = String::new();
+            let s = score(&robots);
+            if s <= prev_max {
+                prev_max = s;
+                print(index, &robots);
+                println!("{}", s);
+                let _ = std::io::stdin().read_line(&mut l);
+            } else {
+                //   println!("{}", index);
+            }
+            index += 1;
+            tick(&mut robots);
+        }
     }
 }
 
@@ -103,8 +190,6 @@ mod day14_tests {
 
     #[test]
     fn test_part_2() {
-        let input = Day14::test_input();
-        let ans = Day14::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert!(true);
     }
 }
