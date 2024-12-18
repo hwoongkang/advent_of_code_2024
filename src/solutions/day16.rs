@@ -1,4 +1,4 @@
-use std::{cmp::Reverse, collections::BinaryHeap};
+use std::collections::BinaryHeap;
 
 use super::Solution;
 
@@ -41,6 +41,23 @@ impl Dir {
             Right => Down,
             Down => Left,
         }
+    }
+}
+#[derive(PartialEq, Eq)]
+struct StateWithHistory {
+    state: State,
+    history: Vec<(usize, usize)>,
+}
+
+impl Ord for StateWithHistory {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.state.cmp(&other.state)
+    }
+}
+
+impl PartialOrd for StateWithHistory {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.state.cmp(&other.state))
     }
 }
 
@@ -170,6 +187,63 @@ impl Maze {
         }
         0
     }
+    fn solve_2(&self, start: (usize, usize), end: (usize, usize)) -> usize {
+        let (mr, mc) = self.size();
+        let mut dists = vec![vec![vec![usize::MAX; 4]; mc]; mr];
+        let state = StateWithHistory {
+            state: State {
+                pos: (start.0, start.1),
+                dir: Right,
+                cost: 0,
+            },
+            history: vec![(start.0, start.1)],
+        };
+        let (r, c, d) = state.state.coord();
+        let mut heap = BinaryHeap::from([state]);
+        dists[r][c][d] = 0;
+        let mut seen = vec![vec![false; mc]; mr];
+        let mut prev_dist = usize::MAX;
+        while let Some(state) = heap.pop() {
+            if state.state.pos == end {
+                if state.state.cost <= prev_dist {
+                    prev_dist = state.state.cost;
+                    for h in state.history {
+                        let (r, c) = h;
+                        seen[r][c] = true;
+                    }
+                    continue;
+                } else if state.state.cost > prev_dist {
+                    break;
+                }
+            }
+
+            for ns in state.state.next() {
+                let (r, c, d) = ns.coord();
+                if !self.map[r][c] {
+                    continue;
+                }
+                if dists[r][c][d] >= ns.cost {
+                    dists[r][c][d] = ns.cost;
+                    let mut new_history = state.history.clone();
+                    new_history.push((r, c));
+                    heap.push(StateWithHistory {
+                        state: ns,
+                        history: new_history,
+                    });
+                }
+            }
+        }
+        let mut ans = 0;
+
+        for row in seen.iter() {
+            for b in row.iter() {
+                if *b {
+                    ans += 1;
+                }
+            }
+        }
+        ans
+    }
 }
 
 pub struct Day16;
@@ -202,8 +276,9 @@ impl Solution for Day16 {
         maze.solve(start, end).to_string()
     }
 
-    fn solve_part_2(_input: String) -> String {
-        String::from("0")
+    fn solve_part_2(input: String) -> String {
+        let (maze, start, end) = Maze::from(input);
+        maze.solve_2(start, end).to_string()
     }
 }
 
@@ -243,6 +318,6 @@ mod day16_tests {
     fn test_part_2() {
         let input = Day16::test_input();
         let ans = Day16::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert_eq!(ans, "64");
     }
 }
