@@ -32,45 +32,6 @@ impl Node {
         }
     }
 
-    fn print(&self, indent: usize) {
-        let tab = "  ".repeat(indent);
-        println!("{}is_leaf: {}", tab, self.is_leaf);
-        for (key, child) in self.children.iter() {
-            println!("{}{}", tab, key);
-            child.borrow().print(indent + 1);
-        }
-    }
-
-    fn construct(&self, word: &str, root: &Self) -> bool {
-        println!("{}", word);
-        if word == "" {
-            return false;
-        }
-        let key = word.chars().next().unwrap();
-        let remaining = &word[1..];
-
-        let child = self.children.get(&key);
-
-        if remaining == "" {
-            if let Some(child) = child {
-                child.borrow().is_leaf
-            } else {
-                false
-            }
-        } else {
-            if let Some(child) = child {
-                println!("{} {} {}", key, child.borrow().is_leaf, remaining);
-                if child.borrow().is_leaf {
-                    child.borrow().construct(remaining, root) || root.construct(remaining, root)
-                } else {
-                    child.borrow().construct(remaining, root)
-                }
-            } else {
-                false
-            }
-        }
-    }
-
     fn matches(&self, word: &str) -> Vec<usize> {
         fn helper(node: &Node, word: &str, sofar: usize, v: &mut Vec<usize>) {
             if node.is_leaf {
@@ -92,7 +53,7 @@ impl Node {
     }
 }
 
-fn can_construct(trie: &Node, word: &str) -> bool {
+fn constructions(trie: &Node, word: &str) -> usize {
     let l = word.len();
     let mut dp = vec![0usize; l + 1];
     dp[0] = 1;
@@ -111,7 +72,11 @@ fn can_construct(trie: &Node, word: &str) -> bool {
         }
     }
 
-    dp[l] != 0
+    dp[l]
+}
+
+fn can_construct(trie: &Node, word: &str) -> bool {
+    constructions(trie, word) != 0
 }
 
 impl Solution for Day19 {
@@ -145,8 +110,19 @@ bbrgwb",
             .to_string()
     }
 
-    fn solve_part_2(_input: String) -> String {
-        String::from("0")
+    fn solve_part_2(input: String) -> String {
+        let lines = &mut input.lines();
+        let mut trie = Node::new();
+        for word in lines.next().unwrap().split(",").map(|w| w.trim()) {
+            let word: Vec<char> = word.chars().collect();
+            trie.insert(&word);
+        }
+        // trie.print(0);
+        lines
+            .skip(1)
+            .map(|line| constructions(&trie, line))
+            .sum::<usize>()
+            .to_string()
     }
 }
 
@@ -180,6 +156,6 @@ mod day19_tests {
     fn test_part_2() {
         let input = Day19::test_input();
         let ans = Day19::solve_part_2(input);
-        assert_eq!(ans, "");
+        assert_eq!(ans, "16");
     }
 }
