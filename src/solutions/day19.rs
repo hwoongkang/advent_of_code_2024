@@ -70,6 +70,48 @@ impl Node {
             }
         }
     }
+
+    fn matches(&self, word: &str) -> Vec<usize> {
+        fn helper(node: &Node, word: &str, sofar: usize, v: &mut Vec<usize>) {
+            if node.is_leaf {
+                v.push(sofar)
+            }
+            if word == "" {
+                return;
+            }
+            let key = word.chars().next().unwrap();
+            let remaining = &word[1..];
+            let child = node.children.get(&key);
+            if let Some(child) = child {
+                helper(&child.borrow(), remaining, sofar + 1, v);
+            }
+        }
+        let mut ans = vec![];
+        helper(self, word, 0, &mut ans);
+        ans
+    }
+}
+
+fn can_construct(trie: &Node, word: &str) -> bool {
+    let l = word.len();
+    let mut dp = vec![0usize; l + 1];
+    dp[0] = 1;
+    for i in 0..=l {
+        let count = dp[i];
+        if count == 0 {
+            continue;
+        }
+        let word = &word[i..];
+        let matches = trie.matches(word);
+        for delta in matches {
+            let j = i + delta;
+            if j <= l {
+                dp[j] += count;
+            }
+        }
+    }
+
+    dp[l] != 0
 }
 
 impl Solution for Day19 {
@@ -98,11 +140,7 @@ bbrgwb",
         // trie.print(0);
         lines
             .skip(1)
-            .enumerate()
-            .filter(|(i, line)| {
-                println!("{}th", i);
-                trie.construct(line, &trie)
-            })
+            .filter(|line| can_construct(&trie, line))
             .count()
             .to_string()
     }
@@ -115,6 +153,21 @@ bbrgwb",
 #[cfg(test)]
 mod day19_tests {
     use super::*;
+
+    #[test]
+    fn test_matches() {
+        let mut trie = Node::new();
+        trie.insert(&['r']);
+        trie.insert(&['r', 'r']);
+        trie.insert(&['r', 'r', 'r', 'r']);
+        trie.insert(&['r', 'r', 'r', 'r', 'w']);
+        let matches = trie.matches("rrrrw");
+        assert_eq!(matches, [1, 2, 4, 5]);
+        let matches = trie.matches("wwrr");
+        assert_eq!(matches, []);
+        let matches = trie.matches("rrr");
+        assert_eq!(matches, [1, 2]);
+    }
 
     #[test]
     fn test_part_1() {
