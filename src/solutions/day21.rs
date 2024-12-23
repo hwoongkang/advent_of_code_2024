@@ -1,5 +1,5 @@
 use std::{
-    collections::{BinaryHeap, HashMap, VecDeque},
+    collections::{BinaryHeap, HashMap},
     hash::Hash,
 };
 
@@ -44,16 +44,6 @@ impl Cmd {
         }
     }
 
-    fn to(&self) -> char {
-        match self {
-            Up => '^',
-            Down => 'v',
-            Left => '<',
-            Right => '>',
-            Press => 'A',
-        }
-    }
-
     fn delta(&self) -> (i32, i32) {
         match self {
             Up => (-1, 0),
@@ -82,6 +72,8 @@ trait Keypad: Sized {
         let (r, c) = self.get();
         format!("{}{}", r, c)
     }
+
+    #[allow(dead_code)]
     fn next(&self) -> Vec<Self> {
         vec![]
     }
@@ -292,6 +284,177 @@ fn dijkstra_part1(target: &str) -> usize {
     0
 }
 
+// https://www.reddit.com/r/adventofcode/comments/1hj2odw/comment/m3cu31p/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button
+
+fn construct_path(from: char, to: char) -> Vec<String> {
+    if from == to {
+        return vec!["A".to_string()];
+    }
+
+    let is_numeric = from.is_ascii_digit() || to.is_ascii_digit();
+
+    let keypad: &[[char; 3]] = if is_numeric {
+        &NUMERIC_KEYPAD
+    } else {
+        &DIRECTIONAL_KEYPAD
+    };
+
+    let mut f = (0, 0);
+    let mut t = (0, 0);
+    for (r, row) in keypad.iter().enumerate() {
+        for (c, ch) in row.iter().enumerate() {
+            let r = r as i32;
+            let c = c as i32;
+            if &from == ch {
+                f = (r, c)
+            }
+            if &to == ch {
+                t = (r, c)
+            }
+        }
+    }
+
+    let dr = t.0 - f.0;
+    let dc = t.1 - f.1;
+    let dr = dr.signum();
+    let dc = dc.signum();
+
+    let rchar = if dr < 0 { '^' } else { 'v' };
+    let cchar = if dc < 0 { '<' } else { '>' };
+
+    let mut ans = vec![];
+
+    if dr != 0 {
+        let mut r = f.0;
+        let mut c = f.1;
+        let mut trace = vec![];
+        let mut local = String::new();
+        while r != t.0 {
+            r += dr;
+            trace.push((r as usize, c as usize));
+            local.push(rchar);
+        }
+        while c != t.1 {
+            c += dc;
+
+            trace.push((r as usize, c as usize));
+            local.push(cchar);
+        }
+
+        if trace
+            .into_iter()
+            .filter(|&(r, c)| keypad[r][c] == DANGER)
+            .count()
+            == 0
+        {
+            local.push('A');
+            ans.push(local);
+        }
+    }
+    if dc != 0 {
+        let mut r = f.0;
+        let mut c = f.1;
+        let mut trace = vec![];
+        let mut local = String::new();
+        while c != t.1 {
+            c += dc;
+            trace.push((r as usize, c as usize));
+            local.push(cchar);
+        }
+        while r != t.0 {
+            r += dr;
+            trace.push((r as usize, c as usize));
+            local.push(rchar);
+        }
+        if trace
+            .into_iter()
+            .filter(|&(r, c)| keypad[r][c] == DANGER)
+            .count()
+            == 0
+        {
+            local.push('A');
+            ans.push(local);
+        }
+    }
+
+    ans
+}
+
+fn paths() -> HashMap<(char, char), Vec<String>> {
+    let mut cache = HashMap::new();
+    let all_chars = "0123456789<^>vA";
+    for ch in all_chars.chars() {
+        cache.insert((ch, ch), vec!["A".to_string()]);
+    }
+    let nums = "0123456789A".chars().collect::<Vec<_>>();
+    for i in 0..nums.len() {
+        for j in i + 1..nums.len() {
+            let from = nums[i];
+            let to = nums[j];
+            cache.insert((from, to), construct_path(from, to));
+            let (from, to) = (to, from);
+            cache.insert((from, to), construct_path(from, to));
+        }
+    }
+    let nums = "<^>v>A".chars().collect::<Vec<_>>();
+    for i in 0..nums.len() {
+        for j in i + 1..nums.len() {
+            let from = nums[i];
+            let to = nums[j];
+            cache.insert((from, to), construct_path(from, to));
+            let (from, to) = (to, from);
+            cache.insert((from, to), construct_path(from, to));
+        }
+    }
+    cache
+}
+
+fn solve_with_depth(target: &str, depth: usize) -> usize {
+    let mut cache: HashMap<(String, usize), usize> = HashMap::new();
+    let paths = paths();
+
+    fn inner(
+        target: &str,
+        depth: usize,
+        cache: &mut HashMap<(String, usize), usize>,
+        paths: &HashMap<(char, char), Vec<String>>,
+    ) -> usize {
+        if depth == 0 {
+            return target.len();
+        }
+        let mut prev = 'A';
+        let mut local = 0;
+        let mut cmd = String::new();
+        for char in target.chars() {
+            let subpaths = paths.get(&(prev, char)).unwrap();
+            prev = char;
+            let mut min = usize::MAX;
+            let mut local_cmd = String::new();
+            for path in subpaths {
+                if let Some(cost) = cache.get(&(path.clone(), depth - 1)) {
+                    if *cost < min {
+                        min = *cost;
+                        local_cmd += path;
+                    }
+                    continue;
+                }
+                let cost = inner(path, depth - 1, cache, paths);
+                cache.insert((path.clone(), depth - 1), cost);
+                if cost < min {
+                    min = cost;
+                    local_cmd += path;
+                }
+            }
+            cmd += &local_cmd;
+            local += min;
+        }
+
+        local
+    }
+
+    inner(target, depth, &mut cache, &paths)
+}
+
 pub struct Day21;
 
 impl Solution for Day21 {
@@ -316,8 +479,15 @@ impl Solution for Day21 {
         ans.to_string()
     }
 
-    fn solve_part_2(_input: String) -> String {
-        String::from("0")
+    fn solve_part_2(input: String) -> String {
+        let mut ans = 0usize;
+        for line in input.lines() {
+            let num: usize = (&line[..3]).parse().unwrap();
+            let shortest = solve_with_depth(line, 26);
+
+            ans += shortest * num;
+        }
+        ans.to_string()
     }
 }
 
@@ -352,6 +522,39 @@ mod day21_tests {
         let ans = dijkstra_part1(target);
         assert_eq!(ans, 68)
     }
+    #[test]
+    fn test_path() {
+        let from = 'A';
+        let to = '2';
+        let paths = construct_path(from, to);
+        assert_eq!(paths, vec!["^<A", "<^A"]);
+
+        let from = 'A';
+        let to = '1';
+        let paths = construct_path(from, to);
+        assert_eq!(paths, vec!["^<<A"]);
+
+        let from = 'A';
+        let to = 'v';
+        let paths = construct_path(from, to);
+        assert_eq!(paths, vec!["v<A", "<vA"]);
+        let from = 'A';
+        let to = '<';
+        let paths = construct_path(from, to);
+        assert_eq!(paths, vec!["v<<A"]);
+        let from = 'A';
+        let to = '^';
+        let paths = construct_path(from, to);
+        assert_eq!(paths, vec!["<A"]);
+    }
+
+    #[test]
+    fn test_cheat() {
+        let input = "029A";
+        assert_eq!(solve_with_depth(input, 1), 12);
+        assert_eq!(solve_with_depth(input, 2), 28);
+        assert_eq!(solve_with_depth(input, 3), 68);
+    }
 
     #[test]
     fn test_part_1() {
@@ -367,42 +570,3 @@ mod day21_tests {
         assert_eq!(ans, "");
     }
 }
-
-//v<A<AA>>^AvA<^A>Av<A<A>>^AvAA<^A>Av<<A>>^AAvA^Av<A>^AA<A>Av<A<A>>^AAAvA<^A>A
-//<v<A>>^A<vA<A>>^AAvAA<^A>A<v<A>>^AAvA^A<vA>^AA<A>A<v<A>A>^AAAvA<^A>A
-
-// 179A
-//    <<  ^ A ^^ A >> A  vvv  A
-// <<vAA>^A>A<AA>AvAA^A<vAAA>^A
-// <<vAA>A>^AAvA<^A>AvA^A<<vA>>^AAvA^A<vA>^AA<A>A<<vA>A>^AAAvA<^A>A
-
-// +---+---+---+
-// | 7 | 8 | 9 |
-// +---+---+---+
-// | 4 | 5 | 6 |
-// +---+---+---+
-// | 1 | 2 | 3 |
-// +---+---+---+
-//     | 0 | A |
-//     +---+---+
-
-//     +---+---+
-//     | ^ | A |
-// +---+---+---+
-// | < | v | > |
-// +---+---+---+
-
-// ^ - <A   - v<<A>>^A
-// > - vA   - v<A>^A
-// v - v<A  - v<A<A>>^A
-// < - v<<A - v<A<AA>>^A
-
-// ^< - <Av<A   = v<<A>>^Av<A<A>>^A
-// <^ - v<<A>^A = v<A<AA>>^AvA<^A>A
-// ^> - <Av>A   =
-// >^ - vA<^A   =
-// v< - v<A<A   =
-//    -
-// <v - v<<A>A  =
-// v> - v<A>A   =
-// >v - vA<A    =
