@@ -1,4 +1,4 @@
-use super::Solution;
+use crate::Solution;
 
 #[derive(PartialEq, Eq)]
 enum Lock {

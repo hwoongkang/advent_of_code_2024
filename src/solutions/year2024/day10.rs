@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use super::Solution;
+use crate::Solution;
 
 struct Map {
     heights: Vec<Vec<u8>>,

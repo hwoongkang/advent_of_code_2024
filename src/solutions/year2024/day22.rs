@@ -1,6 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 
-use super::Solution;
+use crate::Solution;
 
 const PRUNE: i64 = 16777216;
 

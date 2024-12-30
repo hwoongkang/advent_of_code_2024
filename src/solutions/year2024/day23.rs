@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use super::Solution;
+use crate::Solution;
 
 const MAX_NODE: usize = 25 * 26 + 25;
 type CONNECTED = [[bool; MAX_NODE]; MAX_NODE];

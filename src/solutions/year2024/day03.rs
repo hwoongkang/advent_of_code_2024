@@ -1,4 +1,4 @@
-use super::Solution;
+use crate::Solution;
 use regex::Regex;
 
 pub struct Day03;

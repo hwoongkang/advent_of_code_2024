@@ -1,6 +1,6 @@
 use std::collections::BinaryHeap;
 
-use super::Solution;
+use crate::Solution;
 
 const TURN_COST: usize = 1000;
 const MOVE_COST: usize = 1;

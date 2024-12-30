@@ -1,6 +1,6 @@
 use std::collections::{BinaryHeap, VecDeque};
 
-use super::Solution;
+use crate::Solution;
 
 #[derive(Clone)]
 struct Maze {

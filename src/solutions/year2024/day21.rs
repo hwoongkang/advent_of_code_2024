@@ -3,7 +3,7 @@ use std::{
     hash::Hash,
 };
 
-use super::Solution;
+use crate::Solution;
 
 const NUMERIC_C: usize = 3;
 const NUMERIC_R: usize = 4;

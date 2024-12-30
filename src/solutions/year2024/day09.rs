@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use super::Solution;
+use crate::Solution;
 
 enum Space {
     File(u64, usize),

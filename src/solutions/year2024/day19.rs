@@ -1,6 +1,6 @@
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
-use super::Solution;
+use crate::Solution;
 
 pub struct Day19;
 

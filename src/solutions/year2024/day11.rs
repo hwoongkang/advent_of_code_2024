@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::Solution;
+use crate::Solution;
 
 fn num_digits(mut n: usize) -> usize {
     let mut ans = 0;
