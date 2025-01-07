@@ -142,7 +142,7 @@ impl Solution for Day09 {
 }
 
 impl Day09 {
-    pub fn solve_part_1_naive(input: String) -> String {
+    pub fn _solve_part_1_naive(input: String) -> String {
         let mut files: VecDeque<Option<u64>> = VecDeque::new();
         let mut is_file = true;
         let mut file_id = 0;
@@ -189,7 +189,7 @@ mod day09_tests {
     #[test]
     fn test_part_1_naive() {
         let input = Day09::test_input();
-        let ans = Day09::solve_part_1_naive(input);
+        let ans = Day09::_solve_part_1_naive(input);
         assert_eq!(ans, "1928");
     }
 
