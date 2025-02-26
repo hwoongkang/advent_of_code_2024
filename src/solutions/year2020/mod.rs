@@ -41,3 +41,7 @@ pub use day18::Day18;
 mod day19;
 #[allow(unused)]
 pub use day19::Day19;
+
+mod day20;
+#[allow(unused)]
+pub use day20::Day20;
