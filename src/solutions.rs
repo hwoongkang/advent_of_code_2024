@@ -5,4 +5,5 @@ pub trait Solution {
     fn solve_part_2(input: String) -> String;
 }
 pub mod year2020;
+pub mod year2021;
 pub mod year2024;
