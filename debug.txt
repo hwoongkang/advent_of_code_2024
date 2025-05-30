@@ -1,0 +1,250 @@
+
+pointer: 0, code: Input(false)
+Input: [3, 225]
+
+pointer: 2, code: Add(false, false, false)
+add: [1, 225, 6, 6]
+Adding 1 + 1100 to 6
+
+pointer: 6, code: Add(true, true, false)
+add: [1101, 1, 238, 225]
+Adding 1 + 238 to 225
+
+pointer: 10, code: Output(true)
+Output: [104, 0]
+Output: 11 0
+
+pointer: 12, code: Multiply(true, true, false)
+mul: [1102, 89, 49, 225]
+Multiplying 89 * 49 to 225
+
+pointer: 16, code: Multiply(true, true, false)
+mul: [1102, 35, 88, 224]
+Multiplying 35 * 88 to 224
+
+pointer: 20, code: Add(true, false, false)
+add: [101, -3080, 224, 224]
+Adding -3080 + 3080 to 224
+
+pointer: 24, code: Output(false)
+Output: [4, 224]
+Output: 25 0
+
+pointer: 26, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 0 to 223
+
+pointer: 30, code: Add(false, true, false)
+add: [1001, 224, 3, 224]
+Adding 0 + 3 to 224
+
+pointer: 34, code: Add(false, false, false)
+add: [1, 223, 224, 223]
+Adding 0 + 3 to 223
+
+pointer: 38, code: Add(true, true, false)
+add: [1101, 25, 33, 224]
+Adding 25 + 33 to 224
+
+pointer: 42, code: Add(false, true, false)
+add: [1001, 224, -58, 224]
+Adding 58 + -58 to 224
+
+pointer: 46, code: Output(false)
+Output: [4, 224]
+Output: 47 0
+
+pointer: 48, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 3 to 223
+
+pointer: 52, code: Add(true, false, false)
+add: [101, 5, 224, 224]
+Adding 5 + 0 to 224
+
+pointer: 56, code: Add(false, false, false)
+add: [1, 223, 224, 223]
+Adding 24 + 5 to 223
+
+pointer: 60, code: Multiply(true, true, false)
+mul: [1102, 78, 23, 225]
+Multiplying 78 * 23 to 225
+
+pointer: 64, code: Add(false, false, false)
+add: [1, 165, 169, 224]
+Adding 9 + 71 to 224
+
+pointer: 68, code: Add(true, false, false)
+add: [101, -80, 224, 224]
+Adding -80 + 80 to 224
+
+pointer: 72, code: Output(false)
+Output: [4, 224]
+Output: 73 0
+
+pointer: 74, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 29 to 223
+
+pointer: 78, code: Add(true, false, false)
+add: [101, 7, 224, 224]
+Adding 7 + 0 to 224
+
+pointer: 82, code: Add(false, false, false)
+add: [1, 224, 223, 223]
+Adding 7 + 232 to 223
+
+pointer: 86, code: Add(true, false, false)
+add: [101, 55, 173, 224]
+Adding 55 + 10 to 224
+
+pointer: 90, code: Add(false, true, false)
+add: [1001, 224, -65, 224]
+Adding 65 + -65 to 224
+
+pointer: 94, code: Output(false)
+Output: [4, 224]
+Output: 95 0
+
+pointer: 96, code: Multiply(false, true, false)
+mul: [1002, 223, 8, 223]
+Multiplying 239 * 8 to 223
+
+pointer: 100, code: Add(false, true, false)
+add: [1001, 224, 1, 224]
+Adding 0 + 1 to 224
+
+pointer: 104, code: Add(false, false, false)
+add: [1, 223, 224, 223]
+Adding 1912 + 1 to 223
+
+pointer: 108, code: Multiply(false, false, false)
+mul: [2, 161, 14, 224]
+Multiplying 72 * 49 to 224
+
+pointer: 112, code: Add(true, false, false)
+add: [101, -3528, 224, 224]
+Adding -3528 + 3528 to 224
+
+pointer: 116, code: Output(false)
+Output: [4, 224]
+Output: 117 0
+
+pointer: 118, code: Multiply(false, true, false)
+mul: [1002, 223, 8, 223]
+Multiplying 1913 * 8 to 223
+
+pointer: 122, code: Add(false, true, false)
+add: [1001, 224, 7, 224]
+Adding 0 + 7 to 224
+
+pointer: 126, code: Add(false, false, false)
+add: [1, 224, 223, 223]
+Adding 7 + 15304 to 223
+
+pointer: 130, code: Multiply(false, true, false)
+mul: [1002, 61, 54, 224]
+Multiplying 78 * 54 to 224
+
+pointer: 134, code: Add(false, true, false)
+add: [1001, 224, -4212, 224]
+Adding 4212 + -4212 to 224
+
+pointer: 138, code: Output(false)
+Output: [4, 224]
+Output: 139 0
+
+pointer: 140, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 15311 to 223
+
+pointer: 144, code: Add(false, true, false)
+add: [1001, 224, 1, 224]
+Adding 0 + 1 to 224
+
+pointer: 148, code: Add(false, false, false)
+add: [1, 223, 224, 223]
+Adding 122488 + 1 to 223
+
+pointer: 152, code: Add(true, true, false)
+add: [1101, 14, 71, 225]
+Adding 14 + 71 to 225
+
+pointer: 156, code: Add(true, true, false)
+add: [1101, 85, 17, 225]
+Adding 85 + 17 to 225
+
+pointer: 160, code: Multiply(true, true, false)
+mul: [1102, 72, 50, 225]
+Multiplying 72 * 50 to 225
+
+pointer: 164, code: Multiply(true, true, false)
+mul: [1102, 9, 69, 225]
+Multiplying 9 * 69 to 225
+
+pointer: 168, code: Multiply(true, true, false)
+mul: [1102, 71, 53, 225]
+Multiplying 71 * 53 to 225
+
+pointer: 172, code: Add(true, true, false)
+add: [1101, 10, 27, 225]
+Adding 10 + 27 to 225
+
+pointer: 176, code: Add(false, true, false)
+add: [1001, 158, 34, 224]
+Adding 17 + 34 to 224
+
+pointer: 180, code: Add(true, false, false)
+add: [101, -51, 224, 224]
+Adding -51 + 51 to 224
+
+pointer: 184, code: Output(false)
+Output: [4, 224]
+Output: 185 0
+
+pointer: 186, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 122489 to 223
+
+pointer: 190, code: Add(true, false, false)
+add: [101, 6, 224, 224]
+Adding 6 + 0 to 224
+
+pointer: 194, code: Add(false, false, false)
+add: [1, 223, 224, 223]
+Adding 979912 + 6 to 223
+
+pointer: 198, code: Multiply(true, false, false)
+mul: [102, 9, 154, 224]
+Multiplying 9 * 71 to 224
+
+pointer: 202, code: Add(true, false, false)
+add: [101, -639, 224, 224]
+Adding -639 + 639 to 224
+
+pointer: 206, code: Output(false)
+Output: [4, 224]
+Output: 207 0
+
+pointer: 208, code: Multiply(true, false, false)
+mul: [102, 8, 223, 223]
+Multiplying 8 * 979918 to 223
+
+pointer: 212, code: Add(true, false, false)
+add: [101, 2, 224, 224]
+Adding 2 + 0 to 224
+
+pointer: 216, code: Add(false, false, false)
+add: [1, 224, 223, 223]
+Adding 2 + 7839344 to 223
+
+pointer: 220, code: Output(false)
+Output: [4, 223]
+output is not 0: 221 7839346
+Output: 221 7839346
+
+pointer: 222, code: Halt
+Part 1: 
+It took 75545 ms to solve part 1
+Part 2: 
+It took 0 ms to solve part 2

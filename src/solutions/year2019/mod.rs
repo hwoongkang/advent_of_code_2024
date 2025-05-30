@@ -13,3 +13,7 @@ pub use day03::Day03;
 mod day04;
 #[allow(unused)]
 pub use day04::Day04;
+
+mod day05;
+#[allow(unused)]
+pub use day05::Day05;
