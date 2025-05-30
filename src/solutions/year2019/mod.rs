@@ -1,3 +1,5 @@
+mod computer;
+
 mod day01;
 #[allow(unused)]
 pub use day01::Day01;
@@ -17,3 +19,11 @@ pub use day04::Day04;
 mod day05;
 #[allow(unused)]
 pub use day05::Day05;
+
+mod day06;
+#[allow(unused)]
+pub use day06::Day06;
+
+mod day07;
+#[allow(unused)]
+pub use day07::Day07;
