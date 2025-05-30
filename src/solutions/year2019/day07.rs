@@ -20,7 +20,7 @@ use super::computer::{Computer, Result};
        end for
    end if
 */
-fn heaps_algorithm(k: usize, v: &mut Vec<i32>, ans: &mut Vec<Vec<i32>>) {
+fn heaps_algorithm(k: usize, v: &mut Vec<i64>, ans: &mut Vec<Vec<i64>>) {
     if k == 1 {
         ans.push(v.clone());
     } else {
@@ -36,14 +36,14 @@ fn heaps_algorithm(k: usize, v: &mut Vec<i32>, ans: &mut Vec<Vec<i32>>) {
     }
 }
 
-fn permutations(n: i32) -> Vec<Vec<i32>> {
+fn permutations(n: i64) -> Vec<Vec<i64>> {
     let mut v = (0..n).collect();
     let mut ans = vec![];
     heaps_algorithm(n as usize, &mut v, &mut ans);
     ans
 }
 
-fn permutate(mut v: Vec<i32>) -> Vec<Vec<i32>> {
+fn permutate(mut v: Vec<i64>) -> Vec<Vec<i64>> {
     let mut ans = vec![];
     heaps_algorithm(v.len(), &mut v, &mut ans);
     ans
@@ -56,7 +56,7 @@ impl Solution for Day07 {
         String::new()
     }
     fn solve_part_1(input: String) -> String {
-        let simulate = |phase_settings: &[i32]| -> i32 {
+        let simulate = |phase_settings: &[i64]| -> i64 {
             let mut a = Computer::from(&input.clone());
             let mut b = Computer::from(&input.clone());
             let mut c = Computer::from(&input.clone());
@@ -82,7 +82,7 @@ impl Solution for Day07 {
             .to_string()
     }
     fn solve_part_2(input: String) -> String {
-        let simulate = |phase_settings: &[i32]| -> i32 {
+        let simulate = |phase_settings: &[i64]| -> i64 {
             let mut a = Computer::from(&input.clone());
             let mut b = Computer::from(&input.clone());
             let mut c = Computer::from(&input.clone());
@@ -149,7 +149,7 @@ mod day07_tests {
 
     #[test]
     fn test_permutations() {
-        let ans: HashSet<Vec<i32>> = HashSet::from([
+        let ans: HashSet<Vec<i64>> = HashSet::from([
             vec![0, 1, 2],
             vec![0, 2, 1],
             vec![1, 0, 2],

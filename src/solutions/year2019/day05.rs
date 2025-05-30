@@ -8,14 +8,14 @@ impl Solution for Day05 {
         String::new()
     }
     fn solve_part_1(input: String) -> String {
-        let tape: Vec<i32> = input.split(",").map(|w| w.parse().unwrap()).collect();
+        let tape: Vec<i64> = input.split(",").map(|w| w.parse().unwrap()).collect();
         let input_seq = vec![1];
         let mut computer = Computer::with(tape, input_seq);
 
         computer.run_until_halt().to_string()
     }
     fn solve_part_2(input: String) -> String {
-        let tape: Vec<i32> = input.split(",").map(|w| w.parse().unwrap()).collect();
+        let tape: Vec<i64> = input.split(",").map(|w| w.parse().unwrap()).collect();
         let input_seq = vec![5];
         let mut computer = Computer::with(tape, input_seq);
 
