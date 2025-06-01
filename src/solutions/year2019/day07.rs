@@ -100,6 +100,7 @@ impl Solution for Day07 {
 
                 let result = computer.run();
                 match result {
+                    Result::NeedsInput => panic!("Not needed yet"),
                     Result::Output(output) => {
                         computer_index += 1;
                         computer_index %= 5;

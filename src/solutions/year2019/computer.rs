@@ -110,7 +110,7 @@ impl Intcode {
 
 pub struct Computer {
     ptr: usize,
-    tape: Vec<i64>,
+    pub tape: Vec<i64>,
     input_ptr: usize,
     pub input_seq: Vec<i64>,
     relative_base: i64,
@@ -119,6 +119,7 @@ pub struct Computer {
 
 #[derive(PartialEq, Eq)]
 pub enum Result {
+    NeedsInput,
     Output(i64),
     Halted(i64),
 }
@@ -192,6 +193,9 @@ impl Computer {
         // println!("tick! ptr: {} code: {:?}", self.ptr, code);
         match code {
             Intcode::Input(mode) => {
+                if self.input_ptr >= self.input_seq.len() {
+                    return Some(Result::NeedsInput);
+                }
                 let input = self.input_seq[self.input_ptr];
                 self.input_ptr += 1;
                 self.write_to(self.ptr + 1, mode, input);
@@ -305,6 +309,7 @@ mod computer_tests {
         let mut ans = vec![];
         loop {
             match computer.run() {
+                Result::NeedsInput => panic!("Not needed yet"),
                 Result::Output(output) => ans.push(output.to_string()),
                 Result::Halted(_) => break,
             }
@@ -319,6 +324,7 @@ mod computer_tests {
         let mut ans = vec![];
         loop {
             match computer.run() {
+                Result::NeedsInput => panic!("Not needed yet"),
                 Result::Output(output) => ans.push(output.to_string()),
                 Result::Halted(_) => break,
             }
