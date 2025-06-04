@@ -127,7 +127,7 @@ impl Solution for Day13 {
             .split(",")
             .map(|w| w.trim().parse().unwrap())
             .collect();
-        let prev = input.len();
+
         computer.input_seq = input.clone();
         let mut last_input = 0;
         loop {
