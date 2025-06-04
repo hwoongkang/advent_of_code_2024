@@ -111,7 +111,7 @@ impl Intcode {
 pub struct Computer {
     ptr: usize,
     pub tape: Vec<i64>,
-    input_ptr: usize,
+    pub input_ptr: usize,
     pub input_seq: Vec<i64>,
     relative_base: i64,
     output: i64,
