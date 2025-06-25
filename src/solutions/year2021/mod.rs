@@ -1,3 +1,3 @@
-mod day22;
+mod day24;
 #[allow(unused)]
-pub use day22::Day22;
+pub use day24::Day24;
